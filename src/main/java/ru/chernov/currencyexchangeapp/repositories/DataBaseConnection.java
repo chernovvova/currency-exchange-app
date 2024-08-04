@@ -12,7 +12,7 @@ public class DataBaseConnection {
         if(connection == null){
             try {
                 Class.forName(DRIVER_NAME);
-                connection = DriverManager.getConnection("jdbc:sqlite:/Users/vova/IdeaProjects/currency-exchange-app/src/main/resources/db/currency_exchange_app.sqlite");
+                connection = DriverManager.getConnection("jdbc:sqlite:/Users/vova/IdeaProjects/currency-exchange-app/currency_exchange_app.sqlite");
 
             } catch (ClassNotFoundException | SQLException e) {
                 e.printStackTrace();

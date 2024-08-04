@@ -41,17 +41,19 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
     @Override
     public void save(CurrencyDTO entity) {
-        final String query = "INSERT INTO currencies VALUES (?, ?, ?)";
+        final String query = "INSERT INTO currencies VALUES (?, ?, ?, ?)";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, entity.getCode());
-            preparedStatement.setString(2, entity.getName());
-            preparedStatement.setString(3, entity.getSign());
+            preparedStatement.setString(2, entity.getCode());
+            preparedStatement.setString(3, entity.getName());
+            preparedStatement.setString(4, entity.getSign());
 
             preparedStatement.execute();
+
+            connection.commit();
         } catch(SQLException e) {
             e.printStackTrace();
         }
