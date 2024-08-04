@@ -29,8 +29,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         Connection connection = dataBaseConnection.getConnection();
         List<CurrencyDTO> currencies = new ArrayList<>();
 
-        try {
-            Statement statement = connection.createStatement();
+        try (Statement statement = connection.createStatement();){
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
