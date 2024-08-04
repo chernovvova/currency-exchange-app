@@ -1,19 +1,19 @@
-package ru.chernov.currencyexchangeapp.dto;
+package ru.chernov.currencyexchangeapp.models;
 
-public class CurrencyDTO {
+public class Currency {
     private Long id;
     private String name;
     private String code;
     private String sign;
 
-    public CurrencyDTO(Long id, String name, String code, String sign) {
+    public Currency(Long id, String name, String code, String sign) {
         this.id = id;
         this.name = name;
         this.code = code;
         this.sign = sign;
     }
 
-    public CurrencyDTO(String name, String code, String sign) {
+    public Currency(String name, String code, String sign) {
         this.name = name;
         this.code = code;
         this.sign = sign;

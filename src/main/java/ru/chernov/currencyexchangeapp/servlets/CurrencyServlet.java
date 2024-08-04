@@ -1,7 +1,7 @@
 package ru.chernov.currencyexchangeapp.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.chernov.currencyexchangeapp.dto.CurrencyDTO;
+import ru.chernov.currencyexchangeapp.models.Currency;
 import ru.chernov.currencyexchangeapp.repositories.CurrencyRepositoryImpl;
 
 import javax.servlet.ServletException;
@@ -18,7 +18,7 @@ public class CurrencyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String code = req.getPathInfo().replaceFirst("/", "").toUpperCase();
-        Optional<CurrencyDTO> optionalCurrencyDTO = currencyRepository.findByCode(code);
+        Optional<Currency> optionalCurrencyDTO = currencyRepository.findByCode(code);
 
         if (optionalCurrencyDTO.isPresent()) {
             new ObjectMapper().writeValue(resp.getWriter(), optionalCurrencyDTO.get());

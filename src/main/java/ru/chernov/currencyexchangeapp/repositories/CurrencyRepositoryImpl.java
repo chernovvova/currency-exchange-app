@@ -1,6 +1,6 @@
 package ru.chernov.currencyexchangeapp.repositories;
 
-import ru.chernov.currencyexchangeapp.dto.CurrencyDTO;
+import ru.chernov.currencyexchangeapp.models.Currency;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public class CurrencyRepositoryImpl implements CurrencyRepository {
     @Override
-    public Optional<CurrencyDTO> findByCode(String code) {
+    public Optional<Currency> findByCode(String code) {
         final String query = "SELECT * FROM currencies WHERE code = ?";
-        Optional<CurrencyDTO> currencyDTOOptional = Optional.empty();
+        Optional<Currency> currencyDTOOptional = Optional.empty();
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
@@ -30,21 +30,21 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public Optional<CurrencyDTO> findById(Long id) {
+    public Optional<Currency> findById(Long id) {
         return Optional.empty();
     }
 
     @Override
-    public List<CurrencyDTO> findAll() {
+    public List<Currency> findAll() {
         final String query = "SELECT * FROM currencies";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
-        List<CurrencyDTO> currencies = new ArrayList<>();
+        List<Currency> currencies = new ArrayList<>();
 
         try (Statement statement = connection.createStatement()){
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
-                CurrencyDTO currencyDTO = getCurrency(resultSet);
+                Currency currencyDTO = getCurrency(resultSet);
                 currencies.add(currencyDTO);
             }
         } catch (SQLException e) {
@@ -55,7 +55,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public void save(CurrencyDTO entity) {
+    public void save(Currency entity) {
         final String query = "INSERT INTO currencies VALUES (?, ?, ?, ?)";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
@@ -79,12 +79,12 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public void update(CurrencyDTO entity) {
+    public void update(Currency entity) {
 
     }
 
-    private static CurrencyDTO getCurrency(ResultSet resultSet) throws SQLException {
-        return new CurrencyDTO(
+    private static Currency getCurrency(ResultSet resultSet) throws SQLException {
+        return new Currency(
                 resultSet.getLong("id"),
                 resultSet.getString("code"),
                 resultSet.getString("full_name"),
