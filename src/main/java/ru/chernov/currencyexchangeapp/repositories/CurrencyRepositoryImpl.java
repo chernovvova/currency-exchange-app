@@ -8,10 +8,25 @@ import java.util.List;
 import java.util.Optional;
 
 public class CurrencyRepositoryImpl implements CurrencyRepository {
-
     @Override
     public Optional<CurrencyDTO> findByCode(String code) {
-        return Optional.empty();
+        final String query = "SELECT * FROM currencies WHERE code = ?";
+        Optional<CurrencyDTO> currencyDTOOptional = Optional.empty();
+        DataBaseConnection dataBaseConnection = new DataBaseConnection();
+        Connection connection = dataBaseConnection.getConnection();
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, code);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                currencyDTOOptional = Optional.of(getCurrency(resultSet));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return currencyDTOOptional;
     }
 
     @Override
@@ -26,7 +41,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         Connection connection = dataBaseConnection.getConnection();
         List<CurrencyDTO> currencies = new ArrayList<>();
 
-        try (Statement statement = connection.createStatement();){
+        try (Statement statement = connection.createStatement()){
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 CurrencyDTO currencyDTO = getCurrency(resultSet);
