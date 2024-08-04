@@ -1,19 +1,24 @@
 package ru.chernov.currencyexchangeapp.repositories;
 
-import javax.sql.DataSource;
-import java.util.Collections;
-import java.util.Currency;
+import ru.chernov.currencyexchangeapp.dto.CurrencyDTO;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class CurrencyRepositoryImpl implements CurrencyRepository {
+
     @Override
-    public Optional<Currency> findByCode(String code) {
+    public Optional<CurrencyDTO> findByCode(String code) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<Currency> findById(Long id) {
+    public Optional<CurrencyDTO> findById(Long id) {
         return Optional.empty();
     }
 
@@ -23,7 +28,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public Currency save(Currency entity) {
+    public CurrencyDTO save(CurrencyDTO entity) {
         return null;
     }
 
@@ -33,7 +38,16 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public void update(Currency entity) {
+    public void update(CurrencyDTO entity) {
 
+    }
+
+    private static CurrencyDTO getCurrency(ResultSet resultSet) throws SQLException {
+        return new CurrencyDTO(
+                resultSet.getLong("id"),
+                resultSet.getString("code"),
+                resultSet.getString("full_name"),
+                resultSet.getString("sign")
+        );
     }
 }
