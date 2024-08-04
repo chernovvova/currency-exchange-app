@@ -1,23 +1,23 @@
 package ru.chernov.currencyexchangeapp.dto;
 
 public class CurrencyDTO {
-    private int id;
+    private Long id;
     private String name;
     private String code;
     private String sign;
 
-    public CurrencyDTO(int id, String name, String code, String sign) {
+    public CurrencyDTO(Long id, String name, String code, String sign) {
         this.id = id;
         this.name = name;
         this.code = code;
         this.sign = sign;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
