@@ -1,6 +1,7 @@
 package ru.chernov.currencyexchangeapp.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.chernov.currencyexchangeapp.dto.CurrencyDTO;
 import ru.chernov.currencyexchangeapp.repositories.CurrencyRepositoryImpl;
 
 import javax.servlet.ServletException;
@@ -20,6 +21,12 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String name = req.getParameter("name");
+        String code = req.getParameter("code");
+        String sign = req.getParameter("sign");
 
+        CurrencyDTO currency = new CurrencyDTO(name, code, sign);
+
+        currencyRepository.save(currency);
     }
 }
