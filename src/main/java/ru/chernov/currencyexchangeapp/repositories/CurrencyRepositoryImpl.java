@@ -60,8 +60,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);){
             preparedStatement.setString(2, entity.getCode());
             preparedStatement.setString(3, entity.getName());
             preparedStatement.setString(4, entity.getSign());
