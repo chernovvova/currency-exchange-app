@@ -1,5 +1,8 @@
 package ru.chernov.currencyexchangeapp.servlets;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.chernov.currencyexchangeapp.repositories.CurrencyRepositoryImpl;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,9 +12,10 @@ import java.io.IOException;
 
 @WebServlet(urlPatterns = "/currencies")
 public class CurrenciesServlet extends HttpServlet {
+    CurrencyRepositoryImpl currencyRepository = new CurrencyRepositoryImpl();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        new ObjectMapper().writeValue(resp.getWriter(), currencyRepository.findAll());
     }
 
     @Override
