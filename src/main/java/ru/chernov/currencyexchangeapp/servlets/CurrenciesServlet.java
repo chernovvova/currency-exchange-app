@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(urlPatterns = "/currencies")
+@WebServlet(name = "CurrenciesServlet", urlPatterns = "/currencies")
 public class CurrenciesServlet extends HttpServlet {
     CurrencyRepositoryImpl currencyRepository = new CurrencyRepositoryImpl();
     @Override
