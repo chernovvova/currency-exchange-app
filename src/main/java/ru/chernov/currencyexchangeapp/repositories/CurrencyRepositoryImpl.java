@@ -2,10 +2,7 @@ package ru.chernov.currencyexchangeapp.repositories;
 
 import ru.chernov.currencyexchangeapp.dto.CurrencyDTO;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +28,6 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
 
         try (Statement statement = connection.createStatement();){
             ResultSet resultSet = statement.executeQuery(query);
-
             while (resultSet.next()) {
                 CurrencyDTO currencyDTO = getCurrency(resultSet);
                 currencies.add(currencyDTO);
@@ -44,8 +40,21 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public CurrencyDTO save(CurrencyDTO entity) {
-        return null;
+    public void save(CurrencyDTO entity) {
+        final String query = "INSERT INTO currencies VALUES (?, ?, ?)";
+        DataBaseConnection dataBaseConnection = new DataBaseConnection();
+        Connection connection = dataBaseConnection.getConnection();
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, entity.getCode());
+            preparedStatement.setString(2, entity.getName());
+            preparedStatement.setString(3, entity.getSign());
+
+            preparedStatement.execute();
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
