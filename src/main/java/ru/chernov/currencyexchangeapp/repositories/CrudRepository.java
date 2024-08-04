@@ -8,7 +8,7 @@ public interface CrudRepository<T> {
 
     List<T> findAll();
 
-    T save(T entity);
+    void save(T entity);
 
     void delete(Long id);
 
