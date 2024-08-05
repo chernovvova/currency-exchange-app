@@ -40,9 +40,19 @@ public class CurrenciesServlet extends HttpServlet {
         else {
             Currency currency = new Currency(name, code, sign);
             try {
-                currencyRepository.save(currency);
-            } catch (SQLException e) {
+               currency = currencyRepository.save(currency);
 
+                if(currency.getId() != null){
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    new ObjectMapper().writeValue(resp.getWriter(), currency);
+                }
+                else {
+                    ErrorHandler.handleError(HttpServletResponse.SC_CONFLICT, "Currency " + code + " already exists", resp);
+                }
+            } catch (SQLException e) {
+                ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database Error", resp);
+            } catch (Exception e) {
+                ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fatal error", resp);
             }
         }
     }
