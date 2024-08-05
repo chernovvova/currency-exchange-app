@@ -4,6 +4,7 @@ import ru.chernov.currencyexchangeapp.models.Currency;
 import ru.chernov.currencyexchangeapp.models.ExchangeRate;
 
 import javax.xml.transform.Result;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,7 +43,7 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
     }
 
     @Override
-    public Currency save(ExchangeRate entity) throws SQLException {
+    public ExchangeRate save(ExchangeRate entity) throws SQLException {
         return null;
     }
 
@@ -74,7 +75,7 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
                 resultSet.getString("target_sign")
         );
         exchangeRate.setTargetCurrency(target);
-        exchangeRate.setRate(resultSet.getDouble("rate"));
+        exchangeRate.setRate(resultSet.getBigDecimal("rate"));
 
         return exchangeRate;
     }

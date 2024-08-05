@@ -1,10 +1,12 @@
 package ru.chernov.currencyexchangeapp.models;
 
+import java.math.BigDecimal;
+
 public class ExchangeRate {
     Long id;
     Currency baseCurrency;
     Currency targetCurrency;
-    double rate;
+    BigDecimal rate;
 
     public Long getId() {
         return id;
@@ -30,11 +32,11 @@ public class ExchangeRate {
         this.targetCurrency = targetCurrency;
     }
 
-    public double getRate() {
+    public BigDecimal getRate() {
         return rate;
     }
 
-    public void setRate(double rate) {
+    public void setRate(BigDecimal rate) {
         this.rate = rate;
     }
 

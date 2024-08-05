@@ -11,7 +11,7 @@ public interface CrudRepository<T> {
 
     List<T> findAll() throws SQLException;
 
-    Currency save(T entity) throws SQLException;
+    T save(T entity) throws SQLException;
 
     void delete(Long id) throws SQLException;
 
