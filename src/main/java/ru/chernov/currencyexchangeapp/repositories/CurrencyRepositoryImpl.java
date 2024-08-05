@@ -44,14 +44,14 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         while (resultSet.next()) {
-            Currency currencyDTO = getCurrency(resultSet);
-            currencies.add(currencyDTO);
+            Currency currency = getCurrency(resultSet);
+            currencies.add(currency);
         }
         return currencies;
     }
 
     @Override
-    public boolean save(Currency entity) throws SQLException{
+    public Currency save(Currency entity) throws SQLException{
         final String query = "INSERT INTO currencies VALUES (?, ?, ?, ?)";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
@@ -61,11 +61,18 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         preparedStatement.setString(3, entity.getName());
         preparedStatement.setString(4, entity.getSign());
 
-        boolean saveResult = preparedStatement.execute();
+        int saveResult = preparedStatement.executeUpdate();
 
-        connection.commit();
+        Long id = null;
 
-        return saveResult;
+        if (saveResult > 0) {
+            Optional<Currency> currencyDTOOptional = findByCode(entity.getCode());
+            id = currencyDTOOptional.get().getId();
+        }
+
+        entity.setId(id);
+
+        return entity;
     }
 
     @Override
@@ -81,8 +88,8 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     private static Currency getCurrency(ResultSet resultSet) throws SQLException {
         return new Currency(
                 resultSet.getLong("id"),
-                resultSet.getString("code"),
                 resultSet.getString("full_name"),
+                resultSet.getString("code"),
                 resultSet.getString("sign")
         );
     }
