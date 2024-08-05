@@ -35,22 +35,18 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public List<Currency> findAll() {
+    public List<Currency> findAll() throws SQLException{
         final String query = "SELECT * FROM currencies";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
         List<Currency> currencies = new ArrayList<>();
 
-        try (Statement statement = connection.createStatement()){
-            ResultSet resultSet = statement.executeQuery(query);
-            while (resultSet.next()) {
-                Currency currencyDTO = getCurrency(resultSet);
-                currencies.add(currencyDTO);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+        while (resultSet.next()) {
+            Currency currencyDTO = getCurrency(resultSet);
+            currencies.add(currencyDTO);
         }
-
         return currencies;
     }
 
