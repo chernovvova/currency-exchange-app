@@ -1,5 +1,8 @@
 package ru.chernov.currencyexchangeapp.models;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({"id", "name", "code", "sign"})
 public class Currency {
     private Long id;
     private String name;
