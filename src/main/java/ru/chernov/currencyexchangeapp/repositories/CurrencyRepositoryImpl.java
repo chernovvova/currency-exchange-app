@@ -62,8 +62,8 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
         Long id = null;
 
         if (saveResult > 0) {
-            Optional<Currency> currencyDTOOptional = findByCode(entity.getCode());
-            id = currencyDTOOptional.get().getId();
+            Optional<Currency> currency = findByCode(entity.getCode());
+            id = currency.get().getId();
         }
 
         entity.setId(id);
