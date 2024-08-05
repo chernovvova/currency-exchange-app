@@ -21,7 +21,9 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
 
     @Override
     public List<ExchangeRate> findAll() throws SQLException {
-        final String query = "SELECT exchange_rates.id, base.*, target.*, rate " +
+        final String query = "SELECT exchange_rates.id AS id," +
+                " base.id AS base_id, base.code AS base_code, base.full_name AS base_name, base.sign AS base_sign, " +
+                " target.id AS target_id, target.code AS target_code, target.full_name AS target_name, target.sign AS target_sign, rate " +
                 "FROM exchange_rates JOIN currencies base ON base_currency_id = base.id " +
                 "JOIN currencies target ON target_currency_id = target.id";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
@@ -57,21 +59,21 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
     private ExchangeRate getExchangeRate(ResultSet resultSet) throws SQLException {
         ExchangeRate exchangeRate = new ExchangeRate();
 
-        exchangeRate.setId(resultSet.getLong("exchange_rates.id"));
+        exchangeRate.setId(resultSet.getLong("id"));
         Currency base = new Currency(
-                resultSet.getLong("base.id"),
-                resultSet.getString("base.code"),
-                resultSet.getString("base.full_name"),
-                resultSet.getString("base.sign")
+                resultSet.getLong("base_id"),
+                resultSet.getString("base_name"),
+                resultSet.getString("base_code"),
+                resultSet.getString("base_sign")
         );
-
+        exchangeRate.setBaseCurrency(base);
         Currency target = new Currency(
-                resultSet.getLong("target.id"),
-                resultSet.getString("target.code"),
-                resultSet.getString("target.full_name"),
-                resultSet.getString("target.sign")
+                resultSet.getLong("target_id"),
+                resultSet.getString("target_name"),
+                resultSet.getString("target_code"),
+                resultSet.getString("target_sign")
         );
-
+        exchangeRate.setTargetCurrency(target);
         exchangeRate.setRate(resultSet.getDouble("rate"));
 
         return exchangeRate;
