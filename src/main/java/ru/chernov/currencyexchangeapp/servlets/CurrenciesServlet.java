@@ -20,6 +20,7 @@ public class CurrenciesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp){
         try {
             new ObjectMapper().writeValue(resp.getWriter(), currencyRepository.findAll());
+            resp.setStatus(HttpServletResponse.SC_OK);
         } catch(SQLException e) {
             ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database Error", resp);
         } catch (Exception e) {
@@ -33,8 +34,16 @@ public class CurrenciesServlet extends HttpServlet {
         String code = req.getParameter("code");
         String sign = req.getParameter("sign");
 
-        Currency currency = new Currency(name, code, sign);
+        if(name == null || code == null || sign == null){
+            ErrorHandler.handleError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters", resp);
+        }
+        else {
+            Currency currency = new Currency(name, code, sign);
+            try {
+                currencyRepository.save(currency);
+            } catch (SQLException e) {
 
-        currencyRepository.save(currency);
+            }
+        }
     }
 }

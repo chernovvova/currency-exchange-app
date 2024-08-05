@@ -51,22 +51,21 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public void save(Currency entity) {
+    public boolean save(Currency entity) throws SQLException{
         final String query = "INSERT INTO currencies VALUES (?, ?, ?, ?)";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);){
-            preparedStatement.setString(2, entity.getCode());
-            preparedStatement.setString(3, entity.getName());
-            preparedStatement.setString(4, entity.getSign());
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(2, entity.getCode());
+        preparedStatement.setString(3, entity.getName());
+        preparedStatement.setString(4, entity.getSign());
 
-            preparedStatement.execute();
+        boolean saveResult = preparedStatement.execute();
 
-            connection.commit();
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
+        connection.commit();
+
+        return saveResult;
     }
 
     @Override
