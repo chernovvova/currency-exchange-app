@@ -38,16 +38,15 @@ public class CurrenciesServlet extends HttpServlet {
             ErrorHandler.handleError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters", resp);
         }
         else {
-            Currency currency = new Currency(name, code, sign);
             try {
-               currency = currencyRepository.save(currency);
-
-                if(currency.getId() != null){
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                    new ObjectMapper().writeValue(resp.getWriter(), currency);
+                if(currencyRepository.findByCode(code).isPresent()) {
+                    ErrorHandler.handleError(HttpServletResponse.SC_CONFLICT, "Currency " + code + " already exists", resp);
                 }
                 else {
-                    ErrorHandler.handleError(HttpServletResponse.SC_CONFLICT, "Currency " + code + " already exists", resp);
+                    Currency currency = new Currency(name, code, sign);
+                    currency = currencyRepository.save(currency);
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    new ObjectMapper().writeValue(resp.getWriter(), currency);
                 }
             } catch (SQLException e) {
                 ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database Error", resp);
