@@ -9,21 +9,17 @@ import java.util.Optional;
 
 public class CurrencyRepositoryImpl implements CurrencyRepository {
     @Override
-    public Optional<Currency> findByCode(String code) {
+    public Optional<Currency> findByCode(String code) throws SQLException {
         final String query = "SELECT * FROM currencies WHERE code = ?";
         Optional<Currency> currencyDTOOptional = Optional.empty();
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, code);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                currencyDTOOptional = Optional.of(getCurrency(resultSet));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, code);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            currencyDTOOptional = Optional.of(getCurrency(resultSet));
         }
 
         return currencyDTOOptional;
