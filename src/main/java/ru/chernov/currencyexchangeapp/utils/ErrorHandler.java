@@ -6,6 +6,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ErrorHandler {
+
+    private ErrorHandler() {
+    }
+
     public static void handleError(int code, String message, HttpServletResponse response) {
         try {
             response.setStatus(code);

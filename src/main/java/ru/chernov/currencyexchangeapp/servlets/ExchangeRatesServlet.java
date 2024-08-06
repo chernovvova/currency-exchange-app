@@ -1,7 +1,6 @@
 package ru.chernov.currencyexchangeapp.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.chernov.currencyexchangeapp.models.Currency;
 import ru.chernov.currencyexchangeapp.models.ExchangeRate;
 import ru.chernov.currencyexchangeapp.repositories.ExchangeRateRepository;
 import ru.chernov.currencyexchangeapp.repositories.ExchangeRateRepositoryImpl;
@@ -19,7 +18,7 @@ import java.util.List;
 
 @WebServlet(name = "ExchangeRatesServlet", urlPatterns = "/exchangeRates")
 public class ExchangeRatesServlet extends HttpServlet {
-    ExchangeRateRepository exchangeRateRepository = new ExchangeRateRepositoryImpl();
+    private static final ExchangeRateRepository exchangeRateRepository = new ExchangeRateRepositoryImpl();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
@@ -28,7 +27,6 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_OK);
         } catch (SQLException e) {
             ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error", resp);
-            e.printStackTrace();
         } catch (Exception e) {
             ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fatal error", resp);
         }
@@ -62,10 +60,8 @@ public class ExchangeRatesServlet extends HttpServlet {
                 }
             } catch (SQLException e) {
                 ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error", resp);
-                e.printStackTrace();
             } catch (Exception e) {
                 ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fatal error", resp);
-                e.printStackTrace();
             }
         }
     }

@@ -3,11 +3,8 @@ package ru.chernov.currencyexchangeapp.repositories;
 import ru.chernov.currencyexchangeapp.models.Currency;
 import ru.chernov.currencyexchangeapp.models.ExchangeRate;
 
-import javax.xml.transform.Result;
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,9 +24,12 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
-        List<ExchangeRate> exchangeRates = new ArrayList<>();
+        List<ExchangeRate> exchangeRates;
+        ResultSet resultSet;
+        try (Statement statement = connection.createStatement()) {
+            resultSet = statement.executeQuery(query);
+            exchangeRates = new ArrayList<>();
+        }
 
         while (resultSet.next()) {
             ExchangeRate exchangeRate = getExchangeRate(resultSet);
@@ -49,15 +49,18 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(2, entity.getBaseCurrency().getCode());
-        preparedStatement.setString(3, entity.getTargetCurrency().getCode());
-        preparedStatement.setBigDecimal(4, entity.getRate());
+        int saveResult;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+            preparedStatement.setString(2, entity.getBaseCurrency().getCode());
+            preparedStatement.setString(3, entity.getTargetCurrency().getCode());
+            preparedStatement.setBigDecimal(4, entity.getRate());
 
-        int saveResult = preparedStatement.executeUpdate();
-
-        Long id = null;
-        Optional<ExchangeRate> exchangeRate = Optional.empty();
+            saveResult = preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        Optional<ExchangeRate> exchangeRate;
 
         if (saveResult > 0) {
             exchangeRate = findByCodePair(entity.getBaseCurrency().getCode(), entity.getTargetCurrency().getCode());
@@ -90,11 +93,15 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, baseCode);
-        preparedStatement.setString(2, targetCode);
-
-        ResultSet resultSet = preparedStatement.executeQuery();
+        ResultSet resultSet;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, baseCode);
+            preparedStatement.setString(2, targetCode);
+            resultSet = preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
 
         Optional<ExchangeRate> exchangeRate = Optional.empty();
         if(resultSet.next()){

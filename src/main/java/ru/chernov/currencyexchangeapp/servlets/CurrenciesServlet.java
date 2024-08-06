@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 @WebServlet(name = "CurrenciesServlet", urlPatterns = "/currencies")
 public class CurrenciesServlet extends HttpServlet {
-    CurrencyRepositoryImpl currencyRepository = new CurrencyRepositoryImpl();
+    private static final CurrencyRepositoryImpl currencyRepository = new CurrencyRepositoryImpl();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp){
         try {
