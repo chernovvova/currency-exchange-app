@@ -15,6 +15,8 @@ public class Currency {
         this.code = code;
         this.sign = sign;
     }
+    public Currency() {
+    }
 
     public Currency(String name, String code, String sign) {
         this.name = name;
