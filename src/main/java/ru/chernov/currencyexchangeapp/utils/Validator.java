@@ -8,4 +8,8 @@ public class Validator {
     public static boolean validateCurrencyCode(String currencyCode) {
         return !currencyCode.isEmpty() && currencyCode.matches("^[A-Z]{3}$");
     }
+
+    public static boolean validateExchangeRate(String exchangeRate) {
+        return !exchangeRate.isEmpty() && exchangeRate.matches("^[A-Z]{6}$");
+    }
 }
