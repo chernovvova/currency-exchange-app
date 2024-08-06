@@ -5,6 +5,7 @@ import ru.chernov.currencyexchangeapp.models.ExchangeRate;
 import ru.chernov.currencyexchangeapp.repositories.ExchangeRateRepository;
 import ru.chernov.currencyexchangeapp.repositories.ExchangeRateRepositoryImpl;
 import ru.chernov.currencyexchangeapp.utils.ErrorHandler;
+import ru.chernov.currencyexchangeapp.utils.Validator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -42,6 +43,9 @@ public class ExchangeRatesServlet extends HttpServlet {
             || baseCurrencyCode.isEmpty() || targetCurrencyCode.isEmpty() || rateStr.isEmpty()) {
             ErrorHandler.handleError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters", resp);
         }
+        else if(!Validator.validateCurrencyCode(baseCurrencyCode) && Validator.validateCurrencyCode(targetCurrencyCode)) {
+            ErrorHandler.handleError(HttpServletResponse.SC_BAD_REQUEST, "Invalid currencies code pair", resp);
+        }
         else {
             BigDecimal rate = new BigDecimal(rateStr);
             try {
@@ -54,9 +58,13 @@ public class ExchangeRatesServlet extends HttpServlet {
                     exchangeRate.getTargetCurrency().setCode(targetCurrencyCode);
                     exchangeRate.setRate(rate);
                     exchangeRate = exchangeRateRepository.save(exchangeRate);
-
-                    new ObjectMapper().writeValue(resp.getWriter(), exchangeRate);
-                    resp.setStatus(HttpServletResponse.SC_CREATED);
+                    if(exchangeRate == null) {
+                        ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Currencies not found", resp);
+                    }
+                    else {
+                        new ObjectMapper().writeValue(resp.getWriter(), exchangeRate);
+                        resp.setStatus(HttpServletResponse.SC_CREATED);
+                    }
                 }
             } catch (SQLException e) {
                 ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error", resp);
