@@ -45,7 +45,7 @@ public class CurrenciesServlet extends HttpServlet {
                 else {
                     Currency currency = new Currency(name, code, sign);
                     currency = currencyRepository.save(currency);
-                    resp.setStatus(HttpServletResponse.SC_OK);
+                    resp.setStatus(HttpServletResponse.SC_CREATED);
                     new ObjectMapper().writeValue(resp.getWriter(), currency);
                 }
             } catch (SQLException e) {
