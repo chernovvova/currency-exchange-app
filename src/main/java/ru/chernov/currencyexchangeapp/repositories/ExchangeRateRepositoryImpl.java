@@ -41,7 +41,11 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
 
     @Override
     public ExchangeRate save(ExchangeRate entity) throws SQLException {
-        final String query = "INSERT INTO exchange_rates VALUES (?, ?, ?, ?)";
+        final String query = "INSERT INTO exchange_rates VALUES (" +
+                "?, " +
+                "(SELECT id FROM currencies WHERE code = ?), " +
+                "(SELECT id FROM currencies WHERE code = ?), " +
+                "?)";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
@@ -77,11 +81,11 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
 
     @Override
     public Optional<ExchangeRate> findByCodePair(String baseCode, String targetCode) throws SQLException {
-        final String query = "SELECT exchange_rates.id AS id," +
-                " base.id AS base_id, base.code AS base_code, base.full_name AS base_name, base.sign AS base_sign, " +
-                " target.id AS target_id, target.code AS target_code, target.full_name AS target_name, target.sign AS target_sign, rate " +
+        final String query = "SELECT exchange_rates.id AS id, " +
+                "base.id AS base_id, base.code AS base_code, base.full_name AS base_name, base.sign AS base_sign, " +
+                "target.id AS target_id, target.code AS target_code, target.full_name AS target_name, target.sign AS target_sign, rate " +
                 "FROM exchange_rates JOIN currencies base ON base_currency_id = base.id " +
-                "JOIN currencies target ON target_currency_id = target.id" +
+                "JOIN currencies target ON target_currency_id = target.id " +
                 "WHERE base_code = ? AND target_code = ?";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
@@ -92,7 +96,10 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
 
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        Optional<ExchangeRate> exchangeRate = Optional.of(getExchangeRate(resultSet));
+        Optional<ExchangeRate> exchangeRate = Optional.empty();
+        if(resultSet.next()){
+            exchangeRate = Optional.of(getExchangeRate(resultSet));
+        }
 
         return exchangeRate;
     }
