@@ -13,7 +13,7 @@ public class CORSFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
         httpServletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        httpServletResponse.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        httpServletResponse.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH");
 
         chain.doFilter(request, response);
     }
