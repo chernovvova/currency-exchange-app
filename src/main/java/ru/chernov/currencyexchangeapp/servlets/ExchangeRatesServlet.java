@@ -38,12 +38,14 @@ public class ExchangeRatesServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String baseCurrencyCode = req.getParameter("baseCurrencyCode");
         String targetCurrencyCode = req.getParameter("targetCurrencyCode");
-        BigDecimal rate = new BigDecimal(Double.parseDouble(req.getParameter("rate")));
+        String rateStr = req.getParameter("rate");
 
-        if (baseCurrencyCode == null || targetCurrencyCode == null || rate == null) {
+        if (baseCurrencyCode == null || targetCurrencyCode == null || rateStr == null
+            || baseCurrencyCode.isEmpty() || targetCurrencyCode.isEmpty() || rateStr.isEmpty()) {
             ErrorHandler.handleError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters", resp);
         }
         else {
+            BigDecimal rate = new BigDecimal(rateStr);
             try {
                 if(exchangeRateRepository.findByCodePair(baseCurrencyCode, targetCurrencyCode).isPresent()) {
                     ErrorHandler.handleError(HttpServletResponse.SC_CONFLICT, "Exchange rate already exists", resp);
