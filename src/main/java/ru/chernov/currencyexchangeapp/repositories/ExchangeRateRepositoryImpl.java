@@ -11,7 +11,20 @@ import java.util.Optional;
 public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
     @Override
     public Optional<ExchangeRate> findById(Long id) throws SQLException {
-        return Optional.empty();
+        final String query = "SELECT * FROM exchange_rates WHERE id = ?";
+        DataBaseConnection dataBaseConnection = new DataBaseConnection();
+        Connection connection = dataBaseConnection.getConnection();
+        Optional<ExchangeRate> exchangeRateOptional = Optional.empty();
+
+        try(PreparedStatement preparedStatement = connection.prepareStatement(query)){
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                exchangeRateOptional = Optional.of(getExchangeRate(resultSet));
+            }
+        }
+
+        return exchangeRateOptional;
     }
 
     @Override
