@@ -11,7 +11,7 @@ import java.util.Optional;
 public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
     @Override
     public Optional<ExchangeRate> findById(Long id) throws SQLException {
-        final String query = "SELECT * FROM exchange_rates WHERE id = ?";
+        final String query = "SELECT id, base_currency_id, target_currency_id, rate FROM exchange_rates WHERE id = ?";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
         Optional<ExchangeRate> exchangeRateOptional = Optional.empty();
@@ -42,11 +42,13 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
         try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(query);
             exchangeRates = new ArrayList<>();
-        }
-
-        while (resultSet.next()) {
-            ExchangeRate exchangeRate = getExchangeRate(resultSet);
-            exchangeRates.add(exchangeRate);
+            while (resultSet.next()) {
+                ExchangeRate exchangeRate = getExchangeRate(resultSet);
+                exchangeRates.add(exchangeRate);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
 
         return exchangeRates;
@@ -101,21 +103,30 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
     }
 
     @Override
-    public void update(ExchangeRate entity) throws SQLException {
-        final String query = "UPDATE exchange_rates SET base_currency_id = ?, target_currency_id = ?, rate = ? WHERE id = ?";
+    public ExchangeRate update(ExchangeRate entity) throws SQLException {
+        final String query = "UPDATE exchange_rates SET rate = ? WHERE id = ?";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
+        int updateResult = 0;
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, entity.getBaseCurrency().getCode());
-            preparedStatement.setString(2, entity.getTargetCurrency().getCode());
-            preparedStatement.setBigDecimal(3, entity.getRate());
-            preparedStatement.setLong(4, entity.getId());
-            preparedStatement.executeUpdate();
+            preparedStatement.setBigDecimal(1, entity.getRate());
+            preparedStatement.setLong(2, entity.getId());
+            updateResult = preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
         }
+
+        if(updateResult > 0) {
+            Optional<ExchangeRate> exchangeRateOptional =
+                    findByCodePair(entity.getBaseCurrency().getCode(), entity.getTargetCurrency().getCode());
+            if(exchangeRateOptional.isPresent()) {
+                return exchangeRateOptional.get();
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -130,18 +141,18 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
         Connection connection = dataBaseConnection.getConnection();
 
         ResultSet resultSet;
+        Optional<ExchangeRate> exchangeRate = Optional.empty();
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, baseCode);
             preparedStatement.setString(2, targetCode);
             resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                exchangeRate = Optional.of(getExchangeRate(resultSet));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
-        }
-
-        Optional<ExchangeRate> exchangeRate = Optional.empty();
-        if(resultSet.next()){
-            exchangeRate = Optional.of(getExchangeRate(resultSet));
         }
 
         return exchangeRate;

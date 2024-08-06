@@ -115,7 +115,7 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public void update(Currency entity) throws SQLException{
+    public Currency update(Currency entity) throws SQLException{
         final String query = "UPDATE Currencies SET code = ?, full_name = ?, sign = ? WHERE id = ?";
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
@@ -130,6 +130,8 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
             e.printStackTrace();
             throw e;
         }
+
+        return entity;
     }
 
     private static Currency getCurrency(ResultSet resultSet) throws SQLException {
