@@ -9,7 +9,7 @@ public class Validator {
         return !currencyCode.isEmpty() && currencyCode.matches("^[A-Z]{3}$");
     }
 
-    public static boolean validateExchangeRate(String exchangeRate) {
-        return !exchangeRate.isEmpty() && exchangeRate.matches("^[A-Z]{6}$");
+    public static boolean validateExchangeRate(String currencyCodePair) {
+        return !currencyCodePair.isEmpty() && currencyCodePair.matches("^[A-Z]{6}$");
     }
 }
