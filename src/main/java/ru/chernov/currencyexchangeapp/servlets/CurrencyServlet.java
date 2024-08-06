@@ -26,7 +26,7 @@ public class CurrencyServlet extends HttpServlet {
             if(Validator.validateCurrencyCode(code)) {
                 Optional<Currency> optionalCurrencyDTO = currencyRepository.findByCode(code);
                 if (optionalCurrencyDTO.isPresent()) {
-                    resp.setStatus(HttpServletResponse.SC_CREATED);
+                    resp.setStatus(HttpServletResponse.SC_OK);
                     new ObjectMapper().writeValue(resp.getWriter(), optionalCurrencyDTO.get());
                 }
                 else {
