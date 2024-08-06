@@ -30,8 +30,25 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public Optional<Currency> findById(Long id) {
-        return Optional.empty();
+    public Optional<Currency> findById(Long id) throws SQLException {
+        final String query = "SELECT id, code, full_name, sign FROM currencies WHERE id = ?";
+        DataBaseConnection dataBaseConnection = new DataBaseConnection();
+        Connection connection = dataBaseConnection.getConnection();
+        Optional<Currency> currency = Optional.empty();
+
+        try(PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.execute();
+            ResultSet resultSet = preparedStatement.getResultSet();
+            if (resultSet.next()) {
+                currency = Optional.of(getCurrency(resultSet));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        return currency;
     }
 
     @Override
