@@ -8,6 +8,10 @@ public class ExchangeRate {
     Currency targetCurrency;
     BigDecimal rate;
 
+    public ExchangeRate() {
+        baseCurrency = new Currency();
+        targetCurrency = new Currency();
+    }
     public Long getId() {
         return id;
     }
