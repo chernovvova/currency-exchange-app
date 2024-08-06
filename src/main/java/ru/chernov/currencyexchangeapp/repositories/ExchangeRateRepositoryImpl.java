@@ -74,12 +74,35 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
 
     @Override
     public void delete(Long id) throws SQLException {
+        final String query = "DELETE FROM exchange_rates WHERE id = ?";
+        DataBaseConnection dataBaseConnection = new DataBaseConnection();
+        Connection connection = dataBaseConnection.getConnection();
 
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Override
     public void update(ExchangeRate entity) throws SQLException {
+        final String query = "UPDATE exchange_rates SET base_currency_id = ?, target_currency_id = ?, rate = ? WHERE id = ?";
+        DataBaseConnection dataBaseConnection = new DataBaseConnection();
+        Connection connection = dataBaseConnection.getConnection();
 
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, entity.getBaseCurrency().getCode());
+            preparedStatement.setString(2, entity.getTargetCurrency().getCode());
+            preparedStatement.setBigDecimal(3, entity.getRate());
+            preparedStatement.setLong(4, entity.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Override
