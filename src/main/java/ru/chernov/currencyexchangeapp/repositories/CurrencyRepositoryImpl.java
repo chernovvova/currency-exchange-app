@@ -84,13 +84,35 @@ public class CurrencyRepositoryImpl implements CurrencyRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws SQLException{
+        final String query = "DELETE FROM currencies WHERE id = ?";
+        DataBaseConnection dataBaseConnection = new DataBaseConnection();
+        Connection connection = dataBaseConnection.getConnection();
 
+        try(PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void update(Currency entity) {
+    public void update(Currency entity) throws SQLException{
+        final String query = "UPDATE Currencies SET code = ?, full_name = ?, sign = ? WHERE id = ?";
+        DataBaseConnection dataBaseConnection = new DataBaseConnection();
+        Connection connection = dataBaseConnection.getConnection();
 
+        try(PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, entity.getCode());
+            preparedStatement.setString(2, entity.getName());
+            preparedStatement.setString(3, entity.getSign());
+            preparedStatement.setLong(4, entity.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     private static Currency getCurrency(ResultSet resultSet) throws SQLException {
