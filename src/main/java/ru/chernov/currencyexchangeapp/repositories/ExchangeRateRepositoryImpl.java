@@ -37,11 +37,9 @@ public class ExchangeRateRepositoryImpl implements ExchangeRateRepository{
         DataBaseConnection dataBaseConnection = new DataBaseConnection();
         Connection connection = dataBaseConnection.getConnection();
 
-        List<ExchangeRate> exchangeRates;
-        ResultSet resultSet;
+        List<ExchangeRate> exchangeRates = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
-            resultSet = statement.executeQuery(query);
-            exchangeRates = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 ExchangeRate exchangeRate = getExchangeRate(resultSet);
                 exchangeRates.add(exchangeRate);

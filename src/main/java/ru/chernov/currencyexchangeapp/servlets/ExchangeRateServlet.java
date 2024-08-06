@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -58,24 +59,37 @@ public class ExchangeRateServlet extends HttpServlet {
 
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String codePair = req.getPathInfo().replaceFirst("/", "");
-        try {
-            if(Validator.validateExchangeRate(codePair)) {
-                String baseCode = codePair.substring(0, 3);
-                String targetCode = codePair.substring(3, codePair.length());
-                Optional<ExchangeRate> exchangeRate = exchangeRateRepository.findByCodePair(baseCode, targetCode);
-                ExchangeRate newExchangeRate = null;
-                if(exchangeRate.isPresent()) {
-                    newExchangeRate = exchangeRateRepository.update(exchangeRate.get());
-                    new ObjectMapper().writeValue(resp.getWriter(), exchangeRate.get());
+        String rateStr = req.getParameter("rate");
+
+        if(rateStr == null || rateStr.isEmpty()) {
+            ErrorHandler.handleError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters", resp);
+        }
+        else {
+            BigDecimal rate = new BigDecimal(rateStr);
+            try {
+                if(Validator.validateExchangeRate(codePair)) {
+                    String baseCode = codePair.substring(0, 3);
+                    String targetCode = codePair.substring(3, codePair.length());
+                    Optional<ExchangeRate> exchangeRate = exchangeRateRepository.findByCodePair(baseCode, targetCode);
+                    ExchangeRate newExchangeRate = null;
+                    if(exchangeRate.isPresent()) {
+                        exchangeRate.get().setRate(rate);
+                        newExchangeRate = exchangeRateRepository.update(exchangeRate.get());
+                        new ObjectMapper().writeValue(resp.getWriter(), exchangeRate.get());
+                    }
+                    else {
+                        ErrorHandler.handleError(HttpServletResponse.SC_NOT_FOUND, "Exchange rate not found", resp);
+                    }
                 }
                 else {
-                    ErrorHandler.handleError(HttpServletResponse.SC_NOT_FOUND, "Exchange rate not found", resp);
+                    ErrorHandler.handleError(HttpServletResponse.SC_BAD_REQUEST, "Invalid code pair", resp);
                 }
+            } catch (SQLException e) {
+                ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error", resp);
+            } catch (Exception e) {
+                ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fatal error", resp);
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error", resp);
-        } catch (Exception e) {
-            ErrorHandler.handleError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fatal error", resp);
         }
     }
 }
